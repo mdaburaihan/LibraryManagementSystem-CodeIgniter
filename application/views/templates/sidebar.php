@@ -43,7 +43,9 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Author <span class="caret"></span><span style="font-size:16px;" class="pull-right hidden-xs showopacity"></span></a>
           <ul class="dropdown-menu forAnimate" role="menu">
-            <li><a href="#">Add Author</a></li>
+             <li>
+              <?= anchor("author/addEdit_author",'Add/Edit Author') ?>
+            </li>
             <li class="divider"></li>
             <li><a href="#">Author List</a></li>
           </ul>
