@@ -47,7 +47,9 @@
               <?= anchor("author/addEdit_author",'Add/Edit Author') ?>
             </li>
             <li class="divider"></li>
-            <li><a href="#">Author List</a></li>
+            <li>
+              <?= anchor("author/authorListDisplay",'Author List') ?>
+            </li>
           </ul>
         </li>
          <li class="dropdown">

@@ -4,12 +4,13 @@
       <div class="panel-body" style="padding: 40px">
         <div class="alert alert-success" style="display: none;"></div>
         <form name="addeditauthor" id="addEditAuthor" action="" method="post">
-          <input type="hidden" name="authorId" value="0">
+         <!--  <input type="hidden" name="authorId" value= $athr->author_id> -->
+         <?php echo form_hidden('authorId',isset($athr->author_id) ? $athr->author_id : 0); ?>
           <div class="row">
             <div class="col-sm-7">
               <div class="form-group">
-                <label for="authorname">Name :</label>
-                <?php echo form_input(['class'=>'form-control','id'=>'authorname','placeholder'=>'Enter author name','name'=>'authorname','value'=>set_value('authorname')]); ?>
+                <label for="authorname">Name</label>
+                <?php echo form_input(['class'=>'form-control','id'=>'authorname','placeholder'=>'Enter author name','name'=>'authorname','value'=>set_value('authorname',isset($athr->author_name)) ? $athr->author_name : '',TRUE]); ?>
               </div>
             </div>
             <div class="col-sm-5">
@@ -30,6 +31,9 @@
       {
         var url = '<?php echo base_url() ?>author/insertUpdateAuthor';
         var data = $('#addEditAuthor').serialize();
+
+        //alert(data);
+       // exit;
 
       
         $.ajax({
