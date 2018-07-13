@@ -31,17 +31,6 @@ class authorModel extends CI_Model
 		}
 	}
 
-	function deleteStudent(){
-		$id = $this->input->get('id');
-		$this->db->where('student_id', $id);
-		$this->db->delete('students');
-		if($this->db->affected_rows() > 0){
-			return true;
-		}else{
-			return false;
-		}
-	}
-
 	public function updateAuthor($data)
 	{
 		$id = $data['authorId'];

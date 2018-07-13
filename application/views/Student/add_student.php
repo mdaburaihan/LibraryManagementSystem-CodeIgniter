@@ -3,7 +3,7 @@
       <div class="panel-heading">Add Student</div>
       <div class="panel-body" style="padding: 40px">
         <div class="alert alert-success" style="display: none;"></div>
-        <form name="addStudent" id="addStudent" action="" method="post">
+        <form name="addStudent" id="addStudent" action="" method="post" enctype="multipart/form-data">
           <div class="row">
             <div class="col-sm-7">
               <div class="form-group">
@@ -80,57 +80,88 @@
            <div id="emailError" style="color:red;margin-top: 30px"></div>
          </div>
        </div>
-       <?php echo form_submit(['type'=>'button','class'=>'btn btn-success','id'=>'btnSave','value'=>'Submit']); ?>
+       <div class="row">
+        <div class="col-sm-7">
+          <div class="form-group">
+            <label for="image">Image :</label>
+            <?php echo form_upload(['class'=>'form-control','name'=>'pic','id'=>'pic']); ?>
+            <span class="help-block" style="color: red">*Allowed File Type - jpg, jpeg, png</span>  
+          </div>
+        </div>
+        <div class="col-sm-5">
+         <div id="ImageError" style="color:red;margin-top: 30px"></div>
+       </div>
+     </div>
+     <div class="row">
+      <div class="col-sm-12">
+       <?php echo form_submit(['type'=>'submit','class'=>'btn btn-success','id'=>'btnSave','value'=>'Submit']); ?>
        <?php echo form_reset(['type'=>'reset','class'=>'btn btn-danger','value'=>'Reset']); ?>
-     </form>
+     </div>
    </div>
- </div>
+ </form>
+</div>
+</div>
 </div>
 
 <script>
-  $(document).ready(function(){
-    $("#btnSave").click(function(){
-      if(formValidation() == '123456')
+  $(document).ready(function(e){
+    $("#addStudent").on('submit', function(e){
+      e.preventDefault();
+
+      if(formValidation() == '1234567')
       {
-        var url = '<?php echo base_url() ?>student/insertStudent';
-        //alert(url);
-        var data = $('#addStudent').serialize();
-
-        
-
         $.ajax({
-          type: 'ajax',
-          method: 'post',
-          url: url,
-          data: data,
-          async: false,
-          dataType: 'json',
-          success: function(response)
-          {
-            if(response.success)
+          type: 'POST',
+          url: '<?php echo base_url() ?>student/insertStudent',
+          data: new FormData(this),
+          contentType: false,
+          cache: false,
+          processData:false,
+          beforeSend: function(){
+            $('#btnSave').attr("disabled","disabled");
+            $('#addStudent').css("opacity",".5");
+          },
+          success: function(response){
+            if(response.msg_code==1)
             {
               $('#addStudent')[0].reset();
-              if(response.type=='add')
-              {
-                var type = 'added'
-              }
-              else(response.type=='update')
-              {
-                var type ="updated"
-              }
-              $('.alert-success').html('Student '+type+' successfully').fadeIn().delay(4000).fadeOut('slow');
+              $('.alert-success').html(response.msg_data).fadeIn().delay(4000).fadeOut('slow');
             }
+            else if(response.msg_code==2)
+            {
+              $('.alert-danger').html(response.msg_data).fadeIn().delay(4000).fadeOut('slow');
+            }
+            else if(response.msg_code==3)
+            {
+              $('.alert-danger').html(response.msg_data).fadeIn().delay(4000).fadeOut('slow');
+            }  
             else
             {
               alert('Error');
             }
+
+            $('#addStudent').css("opacity","");
+            $("#btnSave").removeAttr("disabled");
           }
+        });
+      }
+    });
+    
+    //file type validation
+   /* $("#pic").change(function() {
+        var pic = this.files[0];
+        var imagefile = pic.type;
+        var match= ["image/jpeg","image/png","image/jpg"];
 
-      });
-  }
+        if(!((imagefile==match[0]) || (imagefile==match[1]) || (imagefile==match[2])))
+        {
+            alert('Please select a valid image file (JPEG/JPG/PNG).');
+            $("#pic").val('');
+            return false;
+        }
+      });*/
+    });
 
-});
-});
 
 
 
@@ -142,6 +173,8 @@
     var studentRegNo = document.getElementById("regno").value;
     var studentPhone = document.getElementById("phone").value;
     var studentEmail = document.getElementById("email").value;
+    var studentImg = document.getElementById("pic").value;
+
     var flag = '';
     if(!studentName=="")
     {
@@ -196,78 +229,106 @@
    flag +='3';
  }
 
-}
-else
-{
-  $('#roll').css({"border":"1px solid red"});
-  document.getElementById("rollError").innerHTML="Please enter roll";
-}
+  }
+  else
+  {
+    $('#roll').css({"border":"1px solid red"});
+    document.getElementById("rollError").innerHTML="Please enter roll";
+  }
 
-if(studentRegNo=="")
-{
-  $('#regno').css({"border":"1px solid red"});
-  document.getElementById("regnoError").innerHTML="Please enter reg no";
-  $('#regnoError').css({"display":"block"});
-}
-else
-{
- $('#regno').css("border",'');
- $('#regnoError').css({"display":"none"});
- flag +='4';
-}
-
-
-if(!studentPhone=="")
-{
- var reg = /^\d+$/;
- if(!reg.test(studentPhone))
- {
-  $('#phone').css({"border":"1px solid red"});
-  document.getElementById("phoneError").innerHTML="Roll should contain only numeric value.";
-  $('#phoneError').css({"display":"block"});
-}
-else
-{
- $('#phone').css("border",'');
- $('#phoneError').css({"display":"none"});
- flag +='5';
-}
-
-}
-else
-{
-  $('#phone').css({"border":"1px solid red"});
-  document.getElementById("phoneError").innerHTML="Please enter phone";
-}
-
-if(!studentEmail=="")
-{
- var positionOfAtTheRate=studentEmail.indexOf("@");
- var positionOfDot=studentEmail.lastIndexOf(".");
-
- if(positionOfAtTheRate<2 || positionOfAtTheRate+2>email.length || positionOfDot+2>email.length || positionOfAtTheRate<0 || positionOfDot<1||positionOfDot<positionOfAtTheRate)
- {
-  $('#email').css({"border":"1px solid red"});
-  document.getElementById("emailError").innerHTML="Invalid Email.";
-  $('#emailError').css({"display":"block"});
-}
-else
-{
- $('#email').css("border",'');
- $('#emailError').css({"display":"none"});
- flag +='6';
-}
-
-}
-else
-{
-  $('#email').css({"border":"1px solid red"});
-  document.getElementById("emailError").innerHTML="Please enter email";
-}
+  if(studentRegNo=="")
+  {
+    $('#regno').css({"border":"1px solid red"});
+    document.getElementById("regnoError").innerHTML="Please enter reg no";
+    $('#regnoError').css({"display":"block"});
+  }
+  else
+  {
+   $('#regno').css("border",'');
+   $('#regnoError').css({"display":"none"});
+   flag +='4';
+  }
 
 
-return flag;
-}
-</script>
+  if(!studentPhone=="")
+  {
+   var reg = /^\d+$/;
+   if(!reg.test(studentPhone))
+   {
+    $('#phone').css({"border":"1px solid red"});
+    document.getElementById("phoneError").innerHTML="Roll should contain only numeric value.";
+    $('#phoneError').css({"display":"block"});
+  }
+  else
+  {
+   $('#phone').css("border",'');
+   $('#phoneError').css({"display":"none"});
+   flag +='5';
+  }
+
+  }
+  else
+  {
+    $('#phone').css({"border":"1px solid red"});
+    document.getElementById("phoneError").innerHTML="Please enter phone";
+  }
+
+  if(!studentEmail=="")
+  {
+   var positionOfAtTheRate=studentEmail.indexOf("@");
+   var positionOfDot=studentEmail.lastIndexOf(".");
+
+   if(positionOfAtTheRate<2 || positionOfAtTheRate+2>email.length || positionOfDot+2>email.length || positionOfAtTheRate<0 || positionOfDot<1||positionOfDot<positionOfAtTheRate)
+   {
+    $('#email').css({"border":"1px solid red"});
+    document.getElementById("emailError").innerHTML="Invalid Email.";
+    $('#emailError').css({"display":"block"});
+  }
+  else
+  {
+   $('#email').css("border",'');
+   $('#emailError').css({"display":"none"});
+   flag +='6';
+  }
+
+  }
+  else
+  {
+    $('#email').css({"border":"1px solid red"});
+    document.getElementById("emailError").innerHTML="Please enter email";
+  }
+
+
+  if(!studentImg=="")
+  {
+     var extn = studentImg.split('.').pop();
+     //alert(extn);
+     var match= ["jpeg","png","jpg"];
+
+     if(!((extn==match[0]) || (extn==match[1]) || (extn==match[2])))
+     {
+       $('#pic').css({"border":"1px solid red"});
+      document.getElementById("ImageError").innerHTML="Please select a valid image file (JPEG/JPG/PNG).";
+      $('#ImageError').css({"display":"block"});
+      $("#pic").val('');
+     }
+     else
+     {
+       $('#pic').css("border",'');
+       $('#ImageError').css({"display":"none"});
+       flag +='7';
+     }
+     
+  }
+  else 
+  {
+    $('#pic').css({"border":"1px solid red"});
+    document.getElementById("ImageError").innerHTML="Please upload image";
+  }
+
+
+  return flag;
+  }
+  </script>
 
 

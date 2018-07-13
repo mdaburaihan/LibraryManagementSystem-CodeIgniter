@@ -16,21 +16,59 @@ class student extends My_Controller
 		$deptdata =$this->departmentModel->departmentList();
 
 		$this->load->view('templates/header',$data); 
-        $this->load->view('templates/sidebar'); 
+		$this->load->view('templates/sidebar'); 
 		$this->load->view('student/add_student',compact('deptdata'));
 		$this->load->view('templates/footer');
 	}
 
 	public function insertStudent()
 	{
-		$result = $this->studentModel->addStudent();
-		$msg['success'] = false;
-		$msg['type'] = 'add';
-		if($result)
+		$config=[
+			'upload_path' => 'application/Uploads/',
+			'allowed_types' => 'gif|jpg|png'
+		];
+
+		$this->load->library('upload',$config);
+
+		$this->upload->initialize($config);
+
+		if($this->upload->do_upload('pic'))
 		{
-			$msg['success'] = true;
+			$postdata = $this->input->post();
+
+			$data = $this->upload->data();
+
+			$image_path = base_url("application/Uploads/" .time().$data['raw_name'] . $data['file_ext']);
+			$postdata['image_path'] = $image_path;
+			if($result = $this->studentModel->addStudent($postdata))
+			{
+				$data['msg_code'] = 1;
+		        $data['msg_data'] = 'Student added successfully.';
+		        //echo "Student added successfully.";
+			}
+			else
+			{
+				$data['msg_code'] = 2;
+		        $data['msg_data'] = 'Student not added. Error occured.';
+		        //echo "Student not added. Error occured.";
+
+			}
 		}
-		echo json_encode($msg);
+		else
+		{
+			//$upload_error = $this->upload->display_errors();
+			//$this->load->view('Admin/add_article',compact('upload_error'));
+			$data['msg_code'] = 3;
+			$data['msg_data'] = 'Image upload error.';
+			//echo $upload_error;
+		}
+		header("Access-Control-Allow-Origin: *");
+		header('Content-Type: application/json');
+
+		echo json_encode($data);
+		exit;
+
+
 	}
 
 	public function studentListDisplay()
