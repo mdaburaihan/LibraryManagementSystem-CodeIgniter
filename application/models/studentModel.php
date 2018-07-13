@@ -3,16 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class studentModel extends CI_Model
 {
-	public function addStudent()
+	public function addStudent($data)
 	{
 		$insertdata = array(
-			'sname'=>$this->input->post('studentname'),
-			'department_id'=>$this->input->post('dept'),
-			'roll'=>$this->input->post('roll'),
-			'regno'=>$this->input->post('regno'),
-			'phone'=>$this->input->post('phone'),
-			'email'=>$this->input->post('email')
-			//'created_at'=>date('Y-m-d H:i:s')
+			'sname' => $data['studentname'],
+			'department_id' =>  $data['dept'],
+			'roll' => $data['roll'],
+			'regno' => $data['regno'],
+			'phone' => $data['phone'],
+			'email' => $data['email'],
+			'image' => $data['image_path']
 		);
 		$this->db->insert('students', $insertdata);
 		if($this->db->affected_rows() > 0){
